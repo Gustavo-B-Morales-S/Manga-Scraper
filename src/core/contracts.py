@@ -11,10 +11,3 @@ class BaseClass:
 class RequestContext(BaseClass):
     base_url: str
     paths: Iterable[str]
-    collection: str
-
-@dataclass(frozen=True)
-class HTTPResponse(BaseClass):
-    content: str
-    url: str
-    status_code: int

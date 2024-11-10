@@ -1,8 +1,8 @@
 # Native Libraries
-import random
+from typing import Callable, Iterable
 from functools import cached_property
 from time import time
-from typing import Callable, Iterable
+import random
 
 # Thirdy Party Libraries
 from ua_parser.user_agent_parser import Parse
