@@ -143,6 +143,8 @@ def main() -> None:
     manga_catalog: DataFrame = get_manga_catalog()
     urls: Series = manga_catalog['url'][:300]
     fetch(paths=urls)
+    
+    get_manga_data()
 
 
 if __name__ == '__main__':
