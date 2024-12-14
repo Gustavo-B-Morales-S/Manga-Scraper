@@ -21,7 +21,7 @@ def format_tag(strong: Node) -> str:
     Returns:
         str: A cleaned and lowercase string
     '''
-    return strong.text().strip(':\n ').lower() if strong else ''
+    return strong.text().strip(':\n ').strip('Nº de ').lower() if strong else ''
 
 
 def save_as_parquet(dataframe: DataFrame, file_name: str) -> None:
