@@ -1,4 +1,3 @@
-```markdown
 This project uses **Taskipy** to automate boring tasks.
 Below are the installation instructions and available commands.
 
@@ -29,7 +28,7 @@ Below are the installation instructions and available commands.
 
 6. Check the available data in ./src/extraction/data/analysis.ipynb
 
-## 📋 Available Commands
+## Available Commands
 
 ### `task lint`
 Runs style checks with `ruff`:
