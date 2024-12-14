@@ -128,7 +128,7 @@ def get_manga_data() -> any:
     get_columns: Callable[[Iterable[dict[str, str]], dict[str, str]]] = (
         lambda contents: reduce(lambda x, y: (x | y), contents)
     )
-    logger.info(table_contents)
+
     save_as_parquet(
         dataframe=DataFrame(data=informative_contents, columns=get_columns(informative_contents)),
         file_name='manga_information'
@@ -143,7 +143,7 @@ def main() -> None:
     manga_catalog: DataFrame = get_manga_catalog()
     urls: Series = manga_catalog['url'][:300]
     fetch(paths=urls)
-    
+
     get_manga_data()
 
 
