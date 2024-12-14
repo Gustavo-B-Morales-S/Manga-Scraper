@@ -1,6 +1,7 @@
 # Native Libraries
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from os import makedirs
 from typing import Callable, Iterable
 from functools import wraps
 from os.path import exists
@@ -139,14 +140,19 @@ class RequestStrategy(ABC):
         logger.info(
             f'Received response {response.status_code} from: {response.url}.'
         )
+        if not exists('./contents'):
+            makedirs('./contents')
+            
         file_name: str = response.url.path.split('/')[-2]
         file_path: str = f'./contents/{file_name}.html'
+
 
         if exists(file_path) and hashes_are_equal(file_path=file_path, bytes_data=response.content):
             logger.info(
                 f'Skipping file {file_name}, unchanged data since the last run.'
             )
             return None
+
 
         with open(file_path, 'w') as file:
             file.write(response.text)
