@@ -1,0 +1,40 @@
+
+allowed_content_keys: tuple[str] = (
+    'título original',
+    'editora original',
+    'volumes no japão',
+    'volumes no brasil',
+    'formato',
+    'miolo',
+    'manga',
+    'serialização no japão',
+    'periodicidade',
+    'pré-publicação',
+    'gênero',
+    'obra original',
+    'serialização',
+    'acabamento',
+    'volumes no japão/frança',
+    'detalhes',
+    'resenha',
+    'volumes',
+    'tradutor',
+    'volumes nos eua e japão',
+    'autor (1)',
+    'autor (2)',
+    'volumes no brasil (1)',
+    'volumes no brasil (2)',
+    'editora brasileira (1)',
+    'editora brasileira (2)'
+)
+
+columns_replace_mapping: tuple[tuple[str]] = (
+    ('data', 'data de lançamento'),
+    ('brasil', 'data no brasil'),
+    ('japão', 'data no japão'),
+    ('compre :', 'compre em'),
+    ('capítulo', 'cap'),
+    ('volumes', 'vol'),
+    ('vol.', 'vol'),
+    ('cap.', 'cap'),
+)
