@@ -10,7 +10,7 @@ import httpx
 from src.core.agents import get_random_user_agent
 
 
-def format_string(strong: Node) -> str:
+def format_tag(strong: Node) -> str:
     '''
     Formats a string extracted from an HTML node.
 

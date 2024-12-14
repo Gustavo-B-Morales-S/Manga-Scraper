@@ -10,7 +10,7 @@ from loguru import logger
 
 # Local Modules
 from src.extraction.static import columns_replace_mapping, allowed_content_keys
-from src.extraction.utils import save_as_parquet, format_string
+from src.extraction.utils import save_as_parquet, format_tag
 from src.extraction.utils import get_html_parser
 from src.entrypoint import fetch
 
@@ -49,7 +49,7 @@ def get_informative_content(parser: HTMLParser, dynamic_tag: str, manga: str) ->
     content: dict[str, str] = {}
 
     for strong in strongs:
-        content_key, content_value = format_string(strong), format_string(strong.next)
+        content_key, content_value = format_tag(strong), format_tag(strong.next)
 
         if content_key not in allowed_content_keys:
             continue
@@ -60,6 +60,7 @@ def get_informative_content(parser: HTMLParser, dynamic_tag: str, manga: str) ->
 
     return content
 
+# Junk code below, refactorings in the future.
 
 def get_tables_content(parser: HTMLParser, manga: str) -> dict[str, str]:
     tables: list[Node] = parser.css('table')
