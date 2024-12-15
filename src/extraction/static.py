@@ -1,4 +1,3 @@
-
 allowed_content_keys: tuple[str] = (
     'título original',
     'editora original',

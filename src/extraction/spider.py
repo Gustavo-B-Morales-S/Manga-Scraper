@@ -1,24 +1,41 @@
 # Native Libraries
-from typing import Callable, Iterable
-from functools import reduce
+from typing import Iterable
 from glob import glob
 
 # Third-Party Libraries
 from selectolax.parser import HTMLParser, Node
-from pandas import DataFrame, Series
-from loguru import logger
+from pandas import DataFrame
 
 # Local Modules
 from src.extraction.static import columns_replace_mapping, allowed_content_keys
-from src.extraction.utils import save_as_parquet, format_tag
-from src.extraction.utils import get_html_parser
 from src.entrypoint import fetch
+from src.extraction.utils import (
+    get_html_parser,
+    determine_dynamic_tag,
+    format_tag,
+    get_columns,
+    replace_columns,
+    save_as_parquet,
+)
 
 
 BASE_URL: str = 'https://blogbbm.com/manga/'
 
 
-def get_manga_catalog() -> DataFrame:
+def get_catalog() -> DataFrame:
+    '''
+    Scrapes manga catalog data from a predefined URL, processes it into a structured format,
+    and saves the resulting data as a Parquet file.
+
+    Returns:
+        DataFrame: A pandas DataFrame containing the manga catalog data with the following columns:
+            - 'url': The URL linking to the manga details.
+            - 'title': The title of the manga.
+            - 'author': The author(s) of the manga.
+            - 'publisher': The publisher of the manga.
+            - 'demography': The target demographic of the manga.
+            - 'year': The year of publication.
+    '''
     parser: HTMLParser = get_html_parser(url=BASE_URL)
     table_data: list[dict[str, str]] = []
 
@@ -44,6 +61,23 @@ def get_manga_catalog() -> DataFrame:
 
 
 def get_informative_content(parser: HTMLParser, dynamic_tag: str, manga: str) -> dict[str, str]:
+    '''
+    Extracts and formats manga informative content from a parsed HTML document based on a dynamic tag.
+
+    This function searches for a specific HTML element (identified by `dynamic_tag`) within a
+    container (`.entry-content`) and extracts key-value pairs defined by `<strong>` tags and their
+    associated sibling elements. The extracted data is filtered by a predefined list of allowed keys.
+
+    Args:
+        parser (HTMLParser): The HTML parser object used to navigate and query the DOM.
+        dynamic_tag (str): The dynamic HTML tag within `.entry-content` used as a scope for extraction.
+        manga (str): The name of the manga, which will be included as part of the resulting dictionary.
+
+    Returns:
+        dict[str, str]: A dictionary containing the extracted key-value pairs. The keys are taken from
+        `<strong>` tags, and their corresponding values are taken from the next sibling element.
+        Additionally, the `manga` key is included in the output dictionary with the given manga name.
+    '''
     strongs: list[Node] = parser.css_first(f'.entry-content {dynamic_tag}').css('strong')
 
     content: dict[str, str] = {}
@@ -60,19 +94,21 @@ def get_informative_content(parser: HTMLParser, dynamic_tag: str, manga: str) ->
 
     return content
 
-# Junk code below, refactorings in the future.
 
-def get_tables_content(parser: HTMLParser, manga: str) -> dict[str, str]:
+def get_tables_content(parser: HTMLParser, dynamic_tag: str, manga: str) -> dict[str, str]:
+    '''
+    It is simply impossible to improve this function.
+    '''
     tables: list[Node] = parser.css('table')
 
     if len(tables) <= 1:
         return None
 
-    tables: list[Node] = (
-        tables[1:] if parser.css_first('.entry-content td') else tables
+    filtered_tables: list[Node] = (
+        tables[1:] if dynamic_tag == 'td' else tables
     )
 
-    for table in tables:
+    for table in filtered_tables:
         rows: list[Node] = table.css('tr')
         header: Node = rows.pop(0)
         columns: list[str] = header.text().strip('\n\t ').lower().split('\n')
@@ -80,21 +116,13 @@ def get_tables_content(parser: HTMLParser, manga: str) -> dict[str, str]:
         if len(rows) <= 1 or len(rows[1].css('td')) > len(columns):
             continue
 
-        for old, new in columns_replace_mapping:
-            try:
-                index: int = columns.index(old)
-                columns[index] = new
-
-            except ValueError:
-                pass
+        replace_columns(columns=columns, mapping=columns_replace_mapping)
 
         for row in rows:
-
-            if row is header or header.text() == 'TÍTULO EDITORA ':
+            if row is header or header.text().strip().lower() == 'título editora':
                 continue
 
-            row_contents: list[Node] = row.css('td')
-            table_items: Iterable = zip(columns, row_contents)
+            table_items: Iterable = zip(columns, row.css('td'))
 
             content: dict[str, str] = {
                 column: value.text() for column, value in table_items
@@ -104,7 +132,13 @@ def get_tables_content(parser: HTMLParser, manga: str) -> dict[str, str]:
             return content
 
 
-def get_manga_data() -> any:
+def persist_structured_data() -> None:
+    '''
+    Extracts manga data from HTML files, processes the data, and saves it in Parquet format.
+
+    This function reads all HTML files from the './contents/' directory, extracts informative
+    content and table data, and saves them as separate Parquet files for further analysis.
+    '''
     files: list[str] = glob('./contents/*.html')
 
     informative_contents: list[dict[str, str]] = []
@@ -116,36 +150,30 @@ def get_manga_data() -> any:
         with open(file_path, 'r') as file:
             parser: HTMLParser = HTMLParser(file.read())
 
-            dynamic_tag: str = (
-                'td' if len(parser.css_first(f'.entry-content td').css('strong')) > 1 else 'p'
-            )
+            dynamic_tag: str = determine_dynamic_tag(parser=parser)
 
             if (content := get_informative_content(parser, dynamic_tag, manga)) is not None:
                 informative_contents.append(content)
 
-            if (content := get_tables_content(parser, manga)) is not None:
+            if (content := get_tables_content(parser, dynamic_tag, manga)) is not None:
                 table_contents.append(content)
 
-    get_columns: Callable[[Iterable[dict[str, str]], dict[str, str]]] = (
-        lambda contents: reduce(lambda x, y: (x | y), contents)
-    )
-
     save_as_parquet(
-        dataframe=DataFrame(data=informative_contents, columns=get_columns(informative_contents)),
+        dataframe=DataFrame(data=informative_contents,
+        columns=get_columns(informative_contents)),
         file_name='manga_information'
     )
     save_as_parquet(
-        dataframe=DataFrame(data=table_contents, columns=get_columns(table_contents)),
-        file_name='manga_tracking'
+        dataframe=DataFrame(data=table_contents,
+        columns=get_columns(table_contents)),
+        file_name='manga_price_tracking'
     )
 
 
 def main() -> None:
-    manga_catalog: DataFrame = get_manga_catalog()
-    urls: Series = manga_catalog['url'][:300]
-    fetch(paths=urls)
-
-    get_manga_data()
+    catalog: DataFrame = get_catalog()
+    fetch(paths=catalog['url'][:500])
+    persist_structured_data()
 
 
 if __name__ == '__main__':
