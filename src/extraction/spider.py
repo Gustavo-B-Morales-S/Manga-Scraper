@@ -171,8 +171,7 @@ def persist_structured_data() -> None:
 
 
 def main() -> None:
-    catalog: DataFrame = get_catalog()
-    fetch(paths=catalog['url'][:500])
+    fetch(paths=get_catalog()['url'])
     persist_structured_data()
 
 
