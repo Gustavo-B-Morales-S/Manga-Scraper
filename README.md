@@ -14,8 +14,12 @@
 ```plaintext
 .
 ├── LICENSE.txt
+├── .python-version
+├── .gitignore
 ├── poetry.lock
+├── pre-commit-config.yaml
 ├── pyproject.toml
+├── DEV.md
 ├── README.md
 ├── contents/
 │   └── example.html           # All HTML content containing manga information
@@ -77,7 +81,7 @@ This will initiate the scraping process and store the extracted data locally.
 
 ## Data Analysis
 
-Collected data can be analyzed using the `analysis.ipynb` notebook located in `src/extraction/data/`.
+Collected data can be analyzed using the `analysis.ipynb` notebook located in `data/`.
 
 ## License
 
