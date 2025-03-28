@@ -21,15 +21,15 @@ trio = "^0.27.0"
 loguru = "^0.7.2"
 tenacity = "^9.0.0"
 ua-parser = "^0.18.0"
-pre-commit = "^4.2.0"
 
 [tool.poetry.group.dev.dependencies]
 taskipy = "^1.14.0"
 ruff = "^0.7.3"
 ipykernel = "^6.29.5"
+bandit = "^1.8.3"
+pre-commit = "^4.2.0"
 
 # ------------------------ Ruff Settings ------------------------ #
-
 [tool.ruff]
 line-length = 85
 
