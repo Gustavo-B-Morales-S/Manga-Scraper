@@ -1,6 +1,6 @@
 # MangaScraper
 
-**MangaScraper** is a web scraping project designed to extract detailed information from the largest manga database in Brazil. The goal is to collect data such as release dates in Brazil and Japan, volumes, chapters, publishers (Brazilian and Japanese), translators, authors, genres, and other relevant information.
+**MangaScraper** is a web scraping project designed to extract detailed information from the largest manga database in Brazil. The goal is to collect data such as price in different marketplaces, release dates in Brazil and Japan, volumes, chapters, publishers (Brazilian and Japanese), translators, authors, genres, and other relevant information.
 
 ## Project Overview
 
