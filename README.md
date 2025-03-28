@@ -41,7 +41,7 @@
 
 ## Requirements
 
-- **Python 3.9+**
+- **Python 3.12.4+**
 - **Poetry**
 
 ## Installation and Setup
@@ -50,7 +50,7 @@
 
 ```bash
 git clone <repository-url>
-cd MangaScraper
+cd Manga-Scraper
 ```
 
 ### 2. Install dependencies with Poetry
@@ -70,7 +70,7 @@ Create a `.env` file based on `template.env` and fill in the necessary configura
 To start data collection, run:
 
 ```bash
-poetry run python src/extraction/spider.py
+poetry run python3 src/extraction/spider.py
 ```
 
 This will initiate the scraping process and store the extracted data locally.
@@ -78,34 +78,6 @@ This will initiate the scraping process and store the extracted data locally.
 ## Data Analysis
 
 Collected data can be analyzed using the `analysis.ipynb` notebook located in `src/extraction/data/`.
-
-## Taskipy Usage
-
-The project uses Taskipy to manage development tasks efficiently. Below are some useful commands:
-
-- **Run the scraper**:
-  ```bash
-  task run
-  ```
-  - Executes `poetry run python3 src/extraction/spider.py`.
-  - Ensures proper virtual environment context.
-
-- **Clean cache files**:
-  ```bash
-  task del_cache
-  ```
-  - Removes temporary files like `__pycache__`, `.pyc`, `.pyo`, `.ruff`, and pytest cache.
-
-- **Linting and formatting**:
-  ```bash
-  task lint
-  ```
-  - Runs `ruff check .` for static analysis and `ruff format . --diff` to preview format changes.
-
-  ```bash
-  task format
-  ```
-  - Applies auto-fixes and formatting using `ruff`.
 
 ## License
 
