@@ -14,5 +14,5 @@ default_settings: ClientSettings = ClientSettings()
 
 
 class BaseConfig(SettingsConfigDict):
-    env_file: str = '../env'
+    env_file: str = '.env'
     env_file_encoding: str = 'utf-8'

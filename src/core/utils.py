@@ -3,11 +3,8 @@ from io import BytesIO
 import hashlib
 
 
-from io import BytesIO
-import hashlib
-
 def generate_hash(file: BytesIO = None) -> str:
-    '''
+    """
     Generates an MD5 hash for the contents of a given file-like object.
 
     Args:
@@ -16,7 +13,7 @@ def generate_hash(file: BytesIO = None) -> str:
 
     Returns:
         str: A hexadecimal string representing the computed MD5 hash of the file's contents.
-    '''
+    """
     hasher: hashlib.Hash = hashlib.md5()
 
     for chunk in iter(lambda: file.read(4096), b''):
@@ -24,8 +21,9 @@ def generate_hash(file: BytesIO = None) -> str:
 
     return hasher.hexdigest()
 
+
 def hashes_are_equal(file_path: str, bytes_data: bytes) -> bool:
-    '''
+    """
     Compares the MD5 hash of a file stored on disk with the MD5 hash of a given byte sequence.
 
     Args:
@@ -34,7 +32,7 @@ def hashes_are_equal(file_path: str, bytes_data: bytes) -> bool:
 
     Returns:
         bool: True if the hashes match, False otherwise.
-    '''
+    """
     received_file_hash: str = generate_hash(file=BytesIO(bytes_data))
 
     with open(file_path, 'rb') as file:

@@ -17,7 +17,7 @@ def fetch(
     paths: Iterable[str] | List[Literal['/']] = ['/'],
     request_strategy: RequestStrategy = SimpleRequestStrategy(),
 ) -> None:
-    '''
+    """
     This function performs asynchronous HTTP requests to multiple paths
     under the given `base_url` and stores the responses in a local directory.
     It uses the provided request strategy to determine who requests are handled.
@@ -30,7 +30,7 @@ def fetch(
                                                        e.g., `SimpleRequestStrategy`
                                                        or    `PaginatedRequestStrategy`.
                                                        Defaults to `SimpleRequestStrategy`.
-    '''
+    """
     return run(
         request_strategy.fetch, RequestContext(base_url=base_url, paths=paths)
     )

@@ -13,7 +13,7 @@ from src.core.agents import get_random_user_agent
 
 
 def get_html_parser(url: str = None, response: str = None) -> HTMLParser:
-    '''
+    """
     Retrieves and parses HTML content into an HTMLParser object.
 
     Args:
@@ -24,7 +24,7 @@ def get_html_parser(url: str = None, response: str = None) -> HTMLParser:
 
     Returns:
         HTMLParser: A BeautifulSoup HTMLParser object containing the parsed HTML content.
-    '''
+    """
     if url:
         response: httpx.Response = httpx.get(
             url, headers={'User-Agent': get_random_user_agent()}
@@ -48,7 +48,7 @@ def determine_dynamic_tag(parser: HTMLParser) -> str:
 
 
 def format_tag(strong: Node) -> str:
-    '''
+    """
     Formats a string extracted from an HTML node using regex.
 
     Args:
@@ -57,14 +57,14 @@ def format_tag(strong: Node) -> str:
 
     Returns:
         str: A cleaned and lowercase string
-    '''
+    """
     text: str = strong.text() if strong is not None else ''
 
     return re.sub(r'^(Nº de\s*)?|^[\s:]+|[\s:]+$', '', text).lower()
 
 
 def replace_columns(columns: list[str], mapping: list[tuple[str, str]]) -> list[str]:
-    '''
+    """
     Replaces specific column names in a list based on a mapping of old and new names.
 
     Args:
@@ -75,7 +75,7 @@ def replace_columns(columns: list[str], mapping: list[tuple[str, str]]) -> list[
 
     Returns:
         list[str]: The updated list of column names after applying the replacements.
-    '''
+    """
     for old, new in mapping:
         try:
             columns[columns.index(old)] = new
@@ -87,7 +87,7 @@ def replace_columns(columns: list[str], mapping: list[tuple[str, str]]) -> list[
 
 
 def get_columns(dict_list: Iterable[dict[str, str]]) -> Iterable[str]:
-    '''
+    """
     Combines all unique keys from multiple dictionaries into a single iterable of strings.
 
     Args:
@@ -95,16 +95,16 @@ def get_columns(dict_list: Iterable[dict[str, str]]) -> Iterable[str]:
 
     Returns:
         Iterable[str]: A set-like iterable containing all unique keys from the input dictionaries.
-    '''
+    """
     return reduce(lambda x, y: (x | y), dict_list)
 
 
 def save_as_parquet(dataframe: DataFrame, file_name: str) -> None:
-    '''
+    """
     Saves a DataFrame as a Parquet file.
 
     Args:
         dataframe (DataFrame): A pandas DataFrame to save as a Parquet file.
         file_name (str): The desired name of the Parquet file (without the file extension).
-    '''
-    dataframe.to_parquet(path=f'./data/{file_name}.parquet', index=False)
+    """
+    dataframe.to_parquet(path=f'data/{file_name}.parquet', index=False)

@@ -23,7 +23,7 @@ BASE_URL: str = 'https://blogbbm.com/manga/'
 
 
 def get_catalog() -> DataFrame:
-    '''
+    """
     Scrapes manga catalog data from a predefined URL, processes it into a structured format,
     and saves the resulting data as a Parquet file.
 
@@ -35,7 +35,7 @@ def get_catalog() -> DataFrame:
             - 'publisher': The publisher of the manga.
             - 'demography': The target demographic of the manga.
             - 'year': The year of publication.
-    '''
+    """
     parser: HTMLParser = get_html_parser(url=BASE_URL)
     table_data: list[dict[str, str]] = []
 
@@ -61,7 +61,7 @@ def get_catalog() -> DataFrame:
 
 
 def get_informative_content(parser: HTMLParser, dynamic_tag: str, manga: str) -> dict[str, str]:
-    '''
+    """
     Extracts and formats manga informative content from a parsed HTML document based on a dynamic tag.
 
     This function searches for a specific HTML element (identified by `dynamic_tag`) within a
@@ -77,7 +77,7 @@ def get_informative_content(parser: HTMLParser, dynamic_tag: str, manga: str) ->
         dict[str, str]: A dictionary containing the extracted key-value pairs. The keys are taken from
         `<strong>` tags, and their corresponding values are taken from the next sibling element.
         Additionally, the `manga` key is included in the output dictionary with the given manga name.
-    '''
+    """
     strongs: list[Node] = parser.css_first(f'.entry-content {dynamic_tag}').css('strong')
 
     content: dict[str, str] = {}
@@ -96,9 +96,9 @@ def get_informative_content(parser: HTMLParser, dynamic_tag: str, manga: str) ->
 
 
 def get_tables_content(parser: HTMLParser, dynamic_tag: str, manga: str) -> dict[str, str]:
-    '''
+    """
     It is simply impossible to improve this function.
-    '''
+    """
     tables: list[Node] = parser.css('table')
 
     if len(tables) <= 1:
@@ -133,12 +133,12 @@ def get_tables_content(parser: HTMLParser, dynamic_tag: str, manga: str) -> dict
 
 
 def persist_structured_data() -> None:
-    '''
+    """
     Extracts manga data from HTML files, processes the data, and saves it in Parquet format.
 
     This function reads all HTML files from the './contents/' directory, extracts informative
     content and table data, and saves them as separate Parquet files for further analysis.
-    '''
+    """
     files: list[str] = glob('./contents/*.html')
 
     informative_contents: list[dict[str, str]] = []
