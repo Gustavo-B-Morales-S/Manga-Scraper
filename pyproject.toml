@@ -1,3 +1,8 @@
+# ------------------------ Poetry/Dependencies Settings ------------------------ #
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "src"
 version = "0.1.0"
@@ -17,11 +22,12 @@ loguru = "^0.7.2"
 tenacity = "^9.0.0"
 ua-parser = "^0.18.0"
 
-
 [tool.poetry.group.dev.dependencies]
 taskipy = "^1.14.0"
 ruff = "^0.7.3"
 ipykernel = "^6.29.5"
+
+# ------------------------ Ruff Settings ------------------------ #
 
 [tool.ruff]
 line-length = 85
@@ -34,11 +40,51 @@ select = ['I', 'F', 'E', 'W', 'PL', 'PT']
 preview = true
 quote-style = 'single'
 
-[tool.taskipy.tasks]
-lint = 'ruff check . ; ruff format . --diff'
-format = 'ruff check . --fix ; ruff format .'
-del_cache = 'find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$|.mypy|.ruff)" | xargs rm -rf'
+# ------------------------ Taskipy Tasks  ------------------------ #
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.taskipy.tasks]
+#  ---------- Test-related tasks ---------- #
+test = "pytest --cov . -vv"
+# ^ Runs pytest with:
+#   --cov: Enable coverage reporting for '.' package
+#   -vv: Extra verbose output (shows individual test names)
+
+cov = "xdg-open $(coverage html | cut -d ' ' -f 5)"
+# ^ Generates and opens HTML coverage report:
+#   1. coverage html: Creates HTML coverage report in htmlcov/
+#   2. cut -d ' ' -f 5: Extracts the report path from coverage's output
+#   3. xdg-open: Opens the report in default browser (Linux/macOS)
+
+# ---------- Execution tasks ---------- #
+run = "poetry run python3 src/extraction/spider.py"
+# ^ Runs the main spider script using:
+#   poetry run: Ensures proper virtual environment context
+#   python3: Explicit Python 3 interpreter
+
+post_run = "task del_cache"
+# ^ Cleanup task that runs after main execution
+# Calls the del_cache task defined below
+
+# ---------- Code quality tasks ---------- #
+lint = "ruff check . ; ruff format . --diff"
+# ^ Runs two checks:
+#   1. ruff check .: Static code analysis (linter)
+#   2. ruff format . --diff: Shows formatting changes without applying them
+
+format = "ruff check . --fix ; ruff format ."
+# ^ Auto-formats code:
+#   1. ruff check . --fix: Fixes linting errors that can be auto-fixed
+#   2. ruff format .: Appoys code formatting
+
+# ---------- Utility tasks ---------- #
+del_cache = 'find . | grep -E "(htmlcov$|.coverage$|pytest_cache$|/__pycache__$|\.pyc$|\.pyo$|.mypy|.ruff)" | xargs rm -rf'
+# ^ Cleans up development cache files by:
+#   1. find .: Searches current directory recursively
+#   2. grep -E: Uses regex to match cache file patterns:
+#      - htmlcov$: Coverage report directory
+#      - .coverage$: Coverage data file
+#      - pytest_cache$: Pytest cache
+#      - /__pycache__$: Python bytecode cache directories
+#      - \.pyc$|\.pyo$: Compiled Python files
+#      - .mypy|.ruff: Type checker and linter caches
+#   3. xargs rm -rf: Force deletes matched files/dirs
